@@ -15,12 +15,20 @@ class Notch_filter():
         parser.add_argument('-i','--archivo',help='Ingrese el nombre del archivo .edf a utilizar',type = str)
         parser.add_argument('-is','--in_sec',help='Segundo inicial del segmento',type = float)
         parser.add_argument('-fs','--fi_sec',help='Segundo final del segmento. Nota: in_sec debe ser menor que fi_sec',type = float)
+        parser.add_argument('-fo','--fo',help='Frecuencia que se desea filtrar. Por defecto fo = 60',type = float)
+        parser.add_argument('-Q','--Q',help='Factor de calidad del filtro. Por defecto Q = 50',type = int)
         parser.add_argument('-e','--edf',help='Nombre y dirección del archivo .edf de salida',type = str)
         parsedargs = parser.parse_args()
         arc = parsedargs.archivo
         ini_sec = parsedargs.in_sec
         final_sec = parsedargs.fi_sec
         output = parsedargs.edf
+        if (parsedargs.fo != None):
+            if (parsedargs.fo> 0):
+                self.f0 = parsedargs.fo
+        if (parsedargs.Q != None):
+            if (parsedargs.Q>0):
+                self.Q = parsedargs.Q
         return arc,ini_sec,final_sec,output
 
     def read_edf(self,nameEdf):
