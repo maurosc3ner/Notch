@@ -13,15 +13,11 @@ class Notch_filter():
     def argparse(self):
         parser = argparse.ArgumentParser()
         parser.add_argument('-i','--archivo',help='Ingrese el nombre del archivo .edf a utilizar',type = str)
-        parser.add_argument('-is','--in_sec',help='Segundo inicial del segmento',type = float)
-        parser.add_argument('-fs','--fi_sec',help='Segundo final del segmento. Nota: in_sec debe ser menor que fi_sec',type = float)
         parser.add_argument('-fo','--fo',help='Frecuencia que se desea filtrar. Por defecto fo = 60',type = float)
         parser.add_argument('-Q','--Q',help='Factor de calidad del filtro. Por defecto Q = 50',type = int)
         parser.add_argument('-e','--edf',help='Nombre y dirección del archivo .edf de salida',type = str)
         parsedargs = parser.parse_args()
         arc = parsedargs.archivo
-        ini_sec = parsedargs.in_sec
-        final_sec = parsedargs.fi_sec
         output = parsedargs.edf
         if (parsedargs.fo != None):
             if (parsedargs.fo> 0):
@@ -29,7 +25,7 @@ class Notch_filter():
         if (parsedargs.Q != None):
             if (parsedargs.Q>0):
                 self.Q = parsedargs.Q
-        return arc,ini_sec,final_sec,output
+        return arc,output
 
     def read_edf(self,nameEdf):
         '''
@@ -50,23 +46,6 @@ class Notch_filter():
         edf._close()
         del edf
         return  in_signal,fs,headers
-    
-    def segmentation(self,in_signal,fs,ini_sec,final_sec):
-        '''
-        Descripción: Se encarga de segmentar los datos del EEG
-        Entradas: - ini_sec: segundo inicial del segmento 
-                  - final_sec: segundo final del segmento
-                  - in_signal: Matriz de Canales X Tiempo
-                  - fs: Frecuencia de muestro
-        Salidas: - segment: Segmento (Matriz de CanalesXTiempo)
-        ''' 
-        n_ini = int(fs*ini_sec)
-        n_final = int(fs*final_sec)
-        n = n_final-n_ini
-        segment = np.zeros([len(in_signal),n])
-        for i in range (0,len(in_signal)):
-            segment[i] = in_signal[i][n_ini:n_final]
-        return segment
 
     def filt(self,in_signal,fs):
         '''
@@ -104,11 +83,10 @@ class Notch_filter():
 
 if __name__ == '__main__':
     notch1 = Notch_filter()
-    arc,ini_sec,final_sec,output = notch1.argparse()
+    arc,output = notch1.argparse()
     signal , fs ,headers= notch1.read_edf(arc)
-    segment = notch1.segmentation(signal,fs,ini_sec,final_sec)
-    filtered_segment = notch1.filt(segment,fs)
-    notch1.write_edf(filtered_segment,headers,output)
+    filtered_signal = notch1.filt(signal,fs)
+    notch1.write_edf(filtered_signal,headers,output)
 
 
  
