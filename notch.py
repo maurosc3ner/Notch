@@ -3,7 +3,7 @@ import numpy as np
 from scipy import signal as sg
 import argparse
 
-class Notch_filter():
+class Notch():
     Q = 0 
     f0 = 0 
     def __init__(self,f0=60,Q=50):
@@ -59,7 +59,7 @@ class Notch_filter():
         out_signal = np.zeros((len(in_signal),len(in_signal[0])))
         for i in range(0,len(in_signal)):
             out_signal[i]=sg.filtfilt(num,den,in_signal[i])
-        return out_signal
+        return out_signal,num,den
 
     def write_edf(self,in_signal,headers,nameEdf):
         '''
@@ -82,10 +82,10 @@ class Notch_filter():
 
 
 if __name__ == '__main__':
-    notch1 = Notch_filter()
+    notch1 = Notch()
     arc,output = notch1.argparse()
     signal , fs ,headers= notch1.read_edf(arc)
-    filtered_signal = notch1.filt(signal,fs)
+    filtered_signal,num,den = notch1.filt(signal,fs)
     notch1.write_edf(filtered_signal,headers,output)
 
 
