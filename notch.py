@@ -3,6 +3,7 @@ import numpy as np
 from scipy import signal as sg
 import argparse
 
+
 class Notch():
     Q = 0 
     f0 = 0 
